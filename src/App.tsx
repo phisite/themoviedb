@@ -1,35 +1,66 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// import { useState } from 'react'
+// import reactLogo from './assets/react.svg'
+// import viteLogo from '/vite.svg'
+// import './App.css'
+
+import axios from "axios";
+import { Card, Navbar } from "flowbite-react";
+import { useEffect, useState } from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
+  interface IMovie {
+    backdrop_path: string;
+    id: number;
+    name: string;
+    overview: string;
+    title: string;
+  }
+
+  const [movies, setMovies] = useState({ results: [] });
+  const getMovies = () =>
+    axios({
+      method: "get",
+      url: `https://api.themoviedb.org/3/trending/all/week?api_key=${
+        import.meta.env.VITE_THEMOVIEDB_API_KEY
+      }`,
+    })
+      .then((response) => {
+        setMovies(response.data);
+      })
+      .catch((error) => console.log(error));
+
+  useEffect(() => {
+    getMovies();
+  }, []);
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
-  )
+    <>
+      <Navbar fluid={true} rounded={true}>
+        <Navbar.Brand href="/">
+          <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+            The Movie DB
+          </span>
+        </Navbar.Brand>
+      </Navbar>
+      <ul className="container mx-auto px-4">
+        {movies.results.length > 0 &&
+          movies.results.map((movie: IMovie) => (
+            <li key={movie.id} className="max-w-sm my-4 mx-auto">
+              <Card
+                imgSrc={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
+              >
+                <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  {movie.title ? movie.title : movie.name}
+                </h5>
+                <p className="font-normal text-gray-700 dark:text-gray-400">
+                  {movie.overview}
+                </p>
+              </Card>
+            </li>
+          ))}
+      </ul>
+    </>
+  );
 }
 
-export default App
+export default App;
