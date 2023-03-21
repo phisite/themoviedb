@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Button, Card, Form, Input, Navbar } from "react-daisyui";
+import { Badge, Button, Card, Form, Input, Navbar } from "react-daisyui";
 import { useEffect, useState } from "react";
 
 function App() {
@@ -10,6 +10,7 @@ function App() {
     overview: string;
     poster_path: string;
     title: string;
+    vote_average: number;
   }
 
   const [movies, setMovies] = useState({ results: [] });
@@ -54,7 +55,14 @@ function App() {
                 />
                 <Card.Body>
                   <Card.Title tag="h2">
-                    {movie.title ? movie.title : movie.name}
+                    <div className="flex items-center gap-2">
+                      <h2 className="gap-2 text-xl">
+                        {movie.title ? movie.title : movie.name}{" "}
+                        <Badge size="lg">
+                          {(movie.vote_average * 10).toPrecision(2)}%
+                        </Badge>
+                      </h2>
+                    </div>
                   </Card.Title>
                   <p>{movie.overview}</p>
                 </Card.Body>
