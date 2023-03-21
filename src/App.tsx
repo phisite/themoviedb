@@ -1,10 +1,5 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import './App.css'
-
 import axios from "axios";
-import { Card, Navbar } from "flowbite-react";
+import { Button, Card, Form, Input, Navbar } from "react-daisyui";
 import { useEffect, useState } from "react";
 
 function App() {
@@ -13,6 +8,7 @@ function App() {
     id: number;
     name: string;
     overview: string;
+    poster_path: string;
     title: string;
   }
 
@@ -35,26 +31,33 @@ function App() {
 
   return (
     <>
-      <Navbar fluid={true} rounded={true}>
-        <Navbar.Brand href="/">
-          <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+      <Navbar className="rounded-box bg-base-100 shadow-xl">
+        <div className="flex-1">
+          <Button className="text-xl normal-case" color="ghost">
             The Movie DB
-          </span>
-        </Navbar.Brand>
+          </Button>
+        </div>
+        <div className="flex-none gap-2">
+          <Form>
+            <Input bordered type="text" placeholder="Search" />
+          </Form>
+        </div>
       </Navbar>
       <ul className="container mx-auto px-4">
         {movies.results.length > 0 &&
           movies.results.map((movie: IMovie) => (
-            <li key={movie.id} className="max-w-sm my-4 mx-auto">
-              <Card
-                imgSrc={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
-              >
-                <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                  {movie.title ? movie.title : movie.name}
-                </h5>
-                <p className="font-normal text-gray-700 dark:text-gray-400">
-                  {movie.overview}
-                </p>
+            <li key={movie.id} className="my-4 mx-auto max-w-sm">
+              <Card>
+                <Card.Image
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  alt={`Poster for ${movie.title ? movie.title : movie.name}`}
+                />
+                <Card.Body>
+                  <Card.Title tag="h2">
+                    {movie.title ? movie.title : movie.name}
+                  </Card.Title>
+                  <p>{movie.overview}</p>
+                </Card.Body>
               </Card>
             </li>
           ))}
