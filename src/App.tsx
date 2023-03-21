@@ -30,6 +30,31 @@ function App() {
     getMovies();
   }, []);
 
+  const [searchInput, setSearchInput] = useState("");
+  const [searchResults, setSearchResults] = useState({ results: [] });
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setSearchInput(e.target.value.length >= 3 ? e.target.value : "");
+  };
+
+  const getSearchResults = (searchInput: string) => {
+    searchInput.length > 0
+      ? axios({
+          method: "get",
+          url: `https://api.themoviedb.org/3/search/movie?api_key=${
+            import.meta.env.VITE_THEMOVIEDB_API_KEY
+          }&language=en-US&query=${searchInput}&page=1&include_adult=false`,
+        })
+          .then((response) => {
+            setSearchResults(response.data);
+          })
+          .catch((error) => console.log(error))
+      : setSearchResults({ results: [] });
+  };
+
+  useEffect(() => getSearchResults(searchInput), [searchInput]);
+
   return (
     <>
       <Navbar className="rounded-box bg-base-100 shadow-xl">
@@ -40,7 +65,14 @@ function App() {
         </div>
         <div className="flex-none gap-2">
           <Form>
-            <Input bordered type="text" placeholder="Search" />
+            <Input
+              bordered
+              type="text"
+              placeholder="Search"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleSearchInputChange(e)
+              }
+            />
           </Form>
         </div>
       </Navbar>
