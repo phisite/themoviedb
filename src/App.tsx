@@ -13,6 +13,15 @@ function App() {
     vote_average: number;
   }
 
+  interface ISearchResult {
+    id: number;
+    name: string;
+    overview: string;
+    poster_path: string;
+    title: string;
+    vote_average: number;
+  }
+
   const [movies, setMovies] = useState({ results: [] });
   const getMovies = () =>
     axios({
@@ -76,6 +85,30 @@ function App() {
           </Form>
         </div>
       </Navbar>
+      <div
+        className={`absolute z-10 w-full rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 shadow shadow-slate-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white ${
+          searchResults.results.length > 0 ? "block" : "hidden"
+        }`}
+      >
+        <div className="w-full rounded-t-lg border-b border-gray-200 px-4 py-2 dark:border-gray-600">
+          {searchResults.results.length > 0
+            ? `${searchResults.results.length} ${
+                searchResults.results.length === 1 ? "result" : "results"
+              } found`
+            : "No search results found"}
+        </div>
+        <div className="h-48 overflow-y-auto">
+          {searchResults.results.map((result: ISearchResult) => (
+            <button
+              key={result.id}
+              type="button"
+              className="w-full cursor-pointer border-b border-gray-200 px-4 py-2 text-left font-medium text-blue-600 hover:bg-gray-100 hover:text-blue-700 focus:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:text-white dark:focus:ring-gray-500"
+            >
+              {result.title}
+            </button>
+          ))}
+        </div>
+      </div>
       <ul className="container mx-auto px-4">
         {movies.results.length > 0 &&
           movies.results.map((movie: IMovie) => (
