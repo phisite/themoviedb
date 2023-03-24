@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Badge, Button, Card, Form, Input, Navbar } from "react-daisyui";
 import { useEffect, useState } from "react";
+import useAsyncTask from "./hooks/useAsyncTask";
 
 function App() {
   interface IMovie {
@@ -22,25 +23,53 @@ function App() {
     vote_average: number;
   }
 
-  const [movies, setMovies] = useState({ results: [] });
-  const getMovies = () =>
-    axios({
-      method: "get",
-      url: `https://api.themoviedb.org/3/trending/all/week?api_key=${
-        import.meta.env.VITE_THEMOVIEDB_API_KEY
-      }`,
-    })
-      .then((response) => {
-        setMovies(response.data);
-      })
-      .catch((error) => console.log(error));
+  const [movies, setMovies] = useState<{ results: IMovie[] }>({ results: [] });
+  // const getMovies = () =>
+  //   axios({
+  //     method: "get",
+  //     url: `https://api.themoviedb.org/3/trending/all/week?api_key=${
+  //       import.meta.env.VITE_THEMOVIEDB_API_KEY
+  //     }`,
+  //   })
+  //     .then((response) => {
+  //       setMovies(response.data);
+  //     })
+  //     .catch((error) => console.log(error));
+
+  // useEffect(() => {
+  //   getMovies();
+  // }, []);
+
+  const getMoviesTask = useAsyncTask(
+    async () =>
+      await axios.get<{ results: IMovie[] }>(
+        `https://api.themoviedb.org/3/trending/all/week?api_key=${
+          import.meta.env.VITE_THEMOVIEDB_API_KEY
+        }`
+      )
+    // await axios<{ results: IMovie[] }>({
+    //   method: "get",
+    //   url: `https://api.themoviedb.org/3/trending/all/week?api_key=${
+    //     import.meta.env.VITE_THEMOVIEDB_API_KEY
+    //   }`,
+    // })
+  );
 
   useEffect(() => {
-    getMovies();
+    getMoviesTask.run();
   }, []);
 
+  useEffect(() => {
+    getMoviesTask.status === "SUCCESS" &&
+      setMovies(getMoviesTask.response.data);
+  }, [getMoviesTask.response]);
+
   const [searchInput, setSearchInput] = useState("");
-  const [searchResults, setSearchResults] = useState({ results: [] });
+  const [searchResults, setSearchResults] = useState<{
+    results: ISearchResult[];
+  }>({
+    results: [],
+  });
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
