@@ -73,7 +73,7 @@ function App() {
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    setSearchInput(e.target.value.length >= 3 ? e.target.value : "");
+    setSearchInput(e.target.value.length >= 1 ? e.target.value : "");
   };
 
   const getSearchResults = (searchInput: string) => {
@@ -94,11 +94,11 @@ function App() {
   useEffect(() => getSearchResults(searchInput), [searchInput]);
 
   return (
-    <>
-      <Navbar className="rounded-box bg-base-100 shadow-xl">
+    <div className="bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300">
+      <Navbar className="mb-4 bg-indigo-900 text-yellow-300 shadow-xl">
         <div className="flex-1">
           <Button className="text-xl normal-case" color="ghost">
-            The Movie DB
+            Movie DB
           </Button>
         </div>
         <div className="flex-none gap-2">
@@ -110,6 +110,7 @@ function App() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleSearchInputChange(e)
               }
+              className="text-gray-900"
             />
           </Form>
         </div>
@@ -131,40 +132,59 @@ function App() {
             <button
               key={result.id}
               type="button"
-              className="w-full cursor-pointer border-b border-gray-200 px-4 py-2 text-left font-medium text-blue-600 hover:bg-gray-100 hover:text-blue-700 focus:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:text-white dark:focus:ring-gray-500"
+              className="flex w-full cursor-pointer gap-2 border-b border-gray-200 px-4 py-2 text-left font-semibold text-gray-600 hover:bg-gray-100 hover:text-gray-700 focus:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:text-white dark:focus:ring-gray-500"
             >
-              {result.title}
+              <img
+                src={
+                  result.poster_path
+                    ? `https://image.tmdb.org/t/p/w92${result.poster_path}`
+                    : "https://placehold.co/40x60"
+                }
+                alt={`Poster for ${result.title}`}
+                className="w-10 text-xs font-medium"
+              />
+              <div>{result.title}</div>
             </button>
           ))}
         </div>
       </div>
-      <ul className="container mx-auto px-4">
+      <ul className="container mx-auto flex flex-wrap justify-center gap-4 px-4">
         {movies.results.length > 0 &&
           movies.results.map((movie: IMovie) => (
-            <li key={movie.id} className="my-4 mx-auto max-w-sm">
-              <Card>
-                <Card.Image
+            <li key={movie.id} className="my-4 mx-4 w-80 max-w-sm">
+              <Card className="glass">
+                <figure>
+                  <img
+                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                    alt={`Poster for ${movie.title ? movie.title : movie.name}`}
+                    className="h-[30rem] w-80 object-cover"
+                  />
+                </figure>
+                {/* <Card.Image
                   src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                   alt={`Poster for ${movie.title ? movie.title : movie.name}`}
-                />
-                <Card.Body>
+                  className="h-[30rem] w-80 object-cover"
+                /> */}
+                <Card.Body className="h-96 overflow-hidden">
                   <Card.Title tag="h2">
                     <div className="flex items-center gap-2">
                       <h2 className="gap-2 text-xl">
                         {movie.title ? movie.title : movie.name}{" "}
-                        <Badge size="lg">
+                        <Badge size="lg" className="bg-indigo-800 text-white">
                           {(movie.vote_average * 10).toPrecision(2)}%
                         </Badge>
                       </h2>
                     </div>
                   </Card.Title>
-                  <p>{movie.overview}</p>
+                  <p className="overflow-hidden text-ellipsis text-sm">
+                    {movie.overview}
+                  </p>
                 </Card.Body>
               </Card>
             </li>
           ))}
       </ul>
-    </>
+    </div>
   );
 }
 
